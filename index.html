@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NexusStudio - GameCopier</title>
+    <style>
+        body { background-color: #0B0E14; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #121824; padding: 30px; border-radius: 12px; border: 1px solid #1e293b; width: 350px; text-align: center; }
+        input { width: 100%; padding: 10px; margin: 15px 0; background: #0B0E14; border: 1px solid #334155; color: #fff; border-radius: 6px; box-sizing: border-box; }
+        button { background: #6366F1; color: white; border: none; padding: 10px 20px; width: 100%; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #4f46e5; }
+        #statusBanner { margin-top: 15px; font-size: 14px; color: #94a3b8; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>NexusStudio Copier</h2>
+        <input type="text" id="assetIdField" placeholder="Enter Asset ID...">
+        <button onclick="triggerGameCopy()">Start Process</button>
+        <div id="statusBanner">Ready</div>
+    </div>
+
+    <script>
+        async function triggerGameCopy() {
+            let assetIdInput = document.getElementById('assetIdField').value;
+            let statusBanner = document.getElementById('statusBanner');
+
+            if (!assetIdInput) {
+                statusBanner.innerText = "[-] Please enter an asset ID.";
+                return;
+            }
+
+            statusBanner.innerText = "[*] Dispatching pipeline...";
+
+            try {
+                let response = await fetch('/api/trigger-copy', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ assetId: assetIdInput })
+                });
+
+                let data = await response.json();
+
+                if (response.ok) {
+                    statusBanner.innerText = "[✔] Success! Logged to Discord.";
+                } else {
+                    statusBanner.innerText = `[-] Error: ${data.error}`;
+                }
+            } catch (err) {
+                statusBanner.innerText = "[-] Network connection failed.";
+            }
+        }
+    </script>
+</body>
+</html>
